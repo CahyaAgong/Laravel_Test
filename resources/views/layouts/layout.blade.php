@@ -6,6 +6,7 @@
   <title>Laravel Test | {{Request::segment(1)}}</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{csrf_token()}}">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
   <!-- Ionicons -->
@@ -33,6 +34,8 @@
 
   <script src="{{asset('plugins/datatables/jquery.dataTables.js') }}"></script>
   <script src="{{asset('plugins/datatables-bs4/js/dataTables.bootstrap4.js') }}"></script>
+
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">

@@ -41,7 +41,6 @@ class CompaniesController extends Controller
     {
         $logo_path = 'logo/' . Auth::user()->id .'';
         $file_name = $request->file('logo_file')->getClientOriginalName();
-        $extensions = $request->file('logo_file')->getClientOriginalExtension();
 
         $request->validate([
             'company_name'  => 'required|max:50',
@@ -79,7 +78,8 @@ class CompaniesController extends Controller
      */
     public function edit($id)
     {
-        //
+      $company  = Companies::find($id);
+      return response()->json($company);
     }
 
     /**
@@ -91,7 +91,24 @@ class CompaniesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      $logo_path  = 'logo/' . Auth::user()->id .'';
+      $file_name  = $request->file('logo_file')->getClientOriginalName();
+
+      $request->validate([
+          'company_name'  => 'required|max:50',
+      ]);
+
+      $update = Companies::where('Id', $id)->update([
+          'name'      => $request->company_name,
+          'email'     => $request->email,
+          'logo'      => $logo_path .'/' . $file_name,
+          'website'   => $request->website,
+      ]);
+
+      if ($update) {
+          $path = Storage::putFileAs('public/'.$logo_path, $request->file('logo_file'), $file_name);
+          return redirect()->route('companies.index')->with('success', 'Data berhasil diupdate!');
+      }
     }
 
     /**
@@ -102,6 +119,11 @@ class CompaniesController extends Controller
      */
     public function destroy($id)
     {
-        //
+      $getData = Companies::find($id);
+      $destroy = Companies::where('Id', $id)->delete();
+      if ($destroy) {
+          Storage::delete('public/' . $getData->logo);
+          return response()->json($destroy);
+      }
     }
 }
