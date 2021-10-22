@@ -20,7 +20,9 @@ class Employees extends Migration
           $table->integer('Companies_Id')->unsigned();
           $table->foreign('Companies_Id')->references('Id')->on('Companies')->onDelete('restrict');
           $table->string('Email')->nullable();
-          $table->string('Phone')->nullable();;
+          $table->string('Phone')->nullable();
+          $table->timestamp('created_at')->nullable();
+          $table->timestamp('updated_at')->nullable();
       });
     }
 

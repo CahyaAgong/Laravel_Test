@@ -18,5 +18,4 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('/companies', 'PagesController@companies')->middleware('is_admin');;
-Route::get('/employees', 'PagesController@employees')->middleware('is_admin');;
+Route::resource('companies', 'CompaniesController')->middleware('is_admin');
