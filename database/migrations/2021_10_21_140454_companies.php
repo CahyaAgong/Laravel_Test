@@ -14,7 +14,7 @@ class Companies extends Migration
     public function up()
     {
       Schema::create('Companies', function (Blueprint $table) {
-          $table->increments('Id');
+          $table->increments('id');
           $table->string('name');
           $table->string('email')->nullable();
           $table->string('logo')->nullable();

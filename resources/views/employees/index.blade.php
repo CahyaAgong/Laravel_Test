@@ -13,7 +13,7 @@
                 <div class="card-header">
                     <h3 class="card-title">
                         <i class="ion ion-clipboard mr-1"></i>
-                        Company List
+                        Employees List
                     </h3>
                 </div>
                 <!-- /.card-header -->
@@ -23,32 +23,33 @@
                             <thead>
                             <tr>
                                 <th> No </th>
-                                <th> Name </th>
+                                <th> Full Name </th>
+                                <th> Company </th>
                                 <th> Email </th>
-                                <th> Logo </th>
-                                <th> Website </th>
+                                <th> Phone </th>
                                 <th> Action </th>
                             </tr>
                             </thead>
                             <tbody>
                               @php($i = 1)
-                                @foreach ($companies as $company)
+                                @foreach ($employees as $employee)
                                 <tr>
                                     <td>{{ $i }}</td>
-                                    <td>{{ $company->name }}</td>
-                                    <td>{{ $company->email }}</td>
-                                    <td><img src="{{ asset('storage/'.$company->logo) }}" width="50" height="50"/></td>
-                                    <td><a href="{{ $company->website }}" target="_blank">{{ $company->website }}</a></td>
+                                    <td>{{$employee->full_name}}</td>
+                                    <td><a href="#" class="detail_company" data-id="{{$employee->company->id}}" data-toggle="modal" data-target="#modal-company">{{$employee->company->name}}</a></td>
+                                    <td>{{$employee->email}}</td>
+                                    <td>{{$employee->phone}}</td>
                                     <td>
-                                        <button class="btn btn-sm btn-info edit-btn" data-id="{{$company->id}}" data-name="{{ $company->name }}" data-toggle="modal" data-target="#modal-id">Update</button>
-                                        <button class="btn btn-sm btn-danger delete-btn" data-id="{{$company->id}}">Delete</button>
+                                        <button class="btn btn-sm btn-info edit-btn" data-id="{{$employee->id}}" data-toggle="modal" data-target="#modal-id">Update</button>
+                                        <button class="btn btn-sm btn-danger delete-btn" data-id="{{$employee->id}}">Delete</button>
                                     </td>
                                 </tr>
                                 @php($i++)
                                 @endforeach
                             </tbody>
                         </table>
-                        @include('companies.modal')
+                        @include('employees.modal')
+                        @include('employees.company_modal')
                     </div>
                 </div>
                 <!-- /.card-body -->
@@ -62,20 +63,27 @@
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable();
+            $('#companies-edit').select2();
 
-            /*=== update company ===*/
+            /*=== update employee ===*/
             $('.edit-btn').click(function(){
               $.ajax({
                   type :'GET',
-                  url  :'{{url("/")}}/companies/'+ $(this).data('id') +'/edit',
+                  url  :'{{url("/")}}/employees/'+ $(this).data('id') +'/edit',
                   dataType: 'json',
                   success:function(data) {
-                    $('#companydata').prop('action', '{{url("/")}}/companies/' + data.id);
+                    $('#employeeData').prop('action', '{{url("/")}}/employees/' + data.employee.id);
 
-                    $('#modal-id').find('input[name="company_id"]').val(data.id);
-                    $('#modal-id').find('input[name="company_name"]').val(data.name);
-                    $('#modal-id').find('input[name="email"]').val(data.email);
-                    $('#modal-id').find('input[name="website"]').val(data.website);
+                    $.each(data.company, function( index, value ) {
+                      $('#modal-id').find('select[name="companies_id_edit"]').append('<option value="' + value.id + '">' + value.name + '</option>');
+                    });
+
+                    $('#modal-id').find('input[name="first_name_edit"]').val(data.employee.first_name);
+                    $('#modal-id').find('input[name="last_name_edit"]').val(data.employee.last_name);
+                    $('#modal-id').find('input[name="email_edit"]').val(data.employee.email);
+                    $('#modal-id').find('input[name="phone_edit"]').val(data.employee.phone);
+
+                    $('#modal-id').find('select[name="companies_id_edit"]').val(data.employee.company_id);
                   },
                   complete:function(){
                   },
@@ -85,11 +93,31 @@
               });
             });
 
-            /*=== delete company ===*/
+            /*=== detail company ===*/
+            $('.detail_company').click(function(){
+              $.ajax({
+                  type :'GET',
+                  url  :'{{url("/")}}/employees/'+ $(this).data('id'),
+                  dataType: 'json',
+                  success:function(data) {
+                    $('#modal-company').find('img[name="logo_comp"]').attr('src', '/storage/'+ data.logo +'');
+                    $('#modal-company').find('input[name="name_comp"]').val(data.name);
+                    $('#modal-company').find('input[name="email_comp"]').val(data.email);
+                    $('#modal-company').find('input[name="site_comp"]').val(data.website);
+                  },
+                  complete:function(){
+                  },
+                  error:function(e){
+                    console.log(e)
+                  }
+              });
+            });
+
+            /*=== delete employee ===*/
             $('.delete-btn').click(function(){
               var id = $(this).attr('data-id');
               swal({
-                    title: "Are You Sure?",
+                    title: "Are You Sure ?",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
@@ -98,7 +126,7 @@
                             $.ajax({
                             headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                             type: "DELETE",
-                            url: "{{ url('/') }}/companies/"+ id,
+                            url: "{{ url('/') }}/employees/"+ id,
                             dataType: "json",
                             success: function (data) {
                                 swal("Poof! Berhasil Dihapus!", {
@@ -107,10 +135,8 @@
                                 location.reload();
                             },
                             complete: function (e) {},
-                            error: function(xhr, ajaxOptions, thrownError){
-                              swal("There's still employees work here!", {
-                                  icon: "warning",
-                              });
+                            error: function(e){
+                              console.log(e);
                             }
                             });
 

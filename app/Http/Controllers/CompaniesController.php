@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Companies;
+use App\Company;
+use App\User;
 use Auth;
 
 class CompaniesController extends Controller
@@ -14,11 +15,17 @@ class CompaniesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     public function __construct()
+     {
+       $this->middleware('auth');
+     }
+
+
     public function index()
     {
-        $companies = Companies::all();
+        $companies = Company::all();
         return view('companies.index', ['companies' => $companies]);
-        // return view('companies.index');
     }
 
     /**
@@ -46,7 +53,7 @@ class CompaniesController extends Controller
             'company_name'  => 'required|max:50',
         ]);
 
-        $insert = Companies::create([
+        $insert = Company::create([
             'name'      => $request->company_name,
             'email'     => $request->email,
             'logo'      => $logo_path .'/' . $file_name,
@@ -55,7 +62,7 @@ class CompaniesController extends Controller
 
         if ($insert->save()) {
             $path = Storage::putFileAs('public/'.$logo_path, $request->file('logo_file'), $file_name);
-            return redirect()->route('companies.index')->with('success', 'Data berhasil ditambahkan!');
+            return redirect()->route('companies.index');
         }
     }
 
@@ -78,7 +85,7 @@ class CompaniesController extends Controller
      */
     public function edit($id)
     {
-      $company  = Companies::find($id);
+      $company  = Company::find($id);
       return response()->json($company);
     }
 
@@ -98,7 +105,7 @@ class CompaniesController extends Controller
           'company_name'  => 'required|max:50',
       ]);
 
-      $update = Companies::where('Id', $id)->update([
+      $update = Company::where('id', $id)->update([
           'name'      => $request->company_name,
           'email'     => $request->email,
           'logo'      => $logo_path .'/' . $file_name,
@@ -119,11 +126,12 @@ class CompaniesController extends Controller
      */
     public function destroy($id)
     {
-      $getData = Companies::find($id);
-      $destroy = Companies::where('Id', $id)->delete();
+      $getData = Company::find($id);
+      $destroy = Company::where('id', $id)->delete();
       if ($destroy) {
           Storage::delete('public/' . $getData->logo);
           return response()->json($destroy);
       }
     }
+
 }

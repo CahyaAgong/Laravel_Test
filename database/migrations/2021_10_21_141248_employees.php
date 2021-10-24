@@ -14,13 +14,13 @@ class Employees extends Migration
     public function up()
     {
       Schema::create('Employees', function (Blueprint $table) {
-          $table->increments('Id');
-          $table->string('First_Name');
-          $table->string('Last_Name');
-          $table->integer('Companies_Id')->unsigned();
-          $table->foreign('Companies_Id')->references('Id')->on('Companies')->onDelete('restrict');
-          $table->string('Email')->nullable();
-          $table->string('Phone')->nullable();
+          $table->increments('id');
+          $table->string('first_name');
+          $table->string('last_name');
+          $table->integer('company_id')->unsigned();
+          $table->foreign('company_id')->references('id')->on('Companies')->onDelete('restrict');
+          $table->string('email')->nullable();
+          $table->string('phone')->nullable();
           $table->timestamp('created_at')->nullable();
           $table->timestamp('updated_at')->nullable();
       });

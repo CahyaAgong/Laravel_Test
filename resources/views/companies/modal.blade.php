@@ -3,7 +3,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h4 class="modal-title" id="userCrudModal"></h4>
+                <h4 class="modal-title" id="userCrudModal">Update Company</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 <input type="hidden" id="company_id" name="company_id">
             </div>
